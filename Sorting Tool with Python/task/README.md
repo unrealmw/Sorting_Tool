@@ -1,40 +1,57 @@
 Description
-With this project, you will learn how to process numeric and text input, sort it, and output useful information about the data. Your final program will work with numbers, words, and lines. In the first stage, we will stick to integer numbers.
+Remember how we wanted the program to work not only with numbers but also with lines and words? In this stage, you will add behavior for text data types to your program. You will also implement parsing for command-line arguments that will allow the user to define the input data type
 
-The program should read user input consisting of several lines, each containing integers separated by an arbitrary number of spaces. Then it should count the number of integers in the input, find the greatest one, and identify the number of times this integer appears. Finally, it should print this information to the console.
-
-If you run your program and try to type in the numbers manually, you'll see that this process will go on infinitely. To end the input, the user should type the end-of-file symbol, informing the operating system that no more input will be provided. On Linux and Mac, the shortcut for this symbol is Ctrl+D or Cmd+D, and on Windows the combination is Ctrl+Z. To check for the end-of-file symbols in your program, use
-
-while True:
-    try:
-        data = input()
-    except EOFError:
-        break
-
-
-construction. This will break the while loop if the end of the input is reached.
+After parsing the arguments and reading the input, the program should treat the input according to its data type and output an information message similar to the one from the previous stage.
 
 Objectives
-Read integers from the console until the end of the input is reached.
+Parse arguments that define the input data type:
+if the optional -dataType argument is provided, it should be followed by long, line, or word, which means that the input consists of numbers, lines, or words, respectively.
+if the argument is not provided, you should assume that the -dataType argument is word.
+Read the input depending on the type:
+long — numbers with an arbitrary number of spaces between them, just like in the previous stage.
+line — each line treated as a whole string.
+word — continuous sequences of characters separated by an arbitrary number of spaces.
+Compute the following information about the data:
+The number of lines, numbers, or words in the input.
+The greatest number or the longest line or word in the input.
+How many times this greatest or longest element occurs in the input (compare words and lines by length; if two elements are the same length, arrange them alphabetically).
+The greatest/longest element's occurrence percentage.
+Print this information as shown in the examples. Note that percentage should be printed as integer value and the longest line should be printed on a separate line, so you will end up printing 4 lines instead of 2.
+Examples
+Run configuration examples:
 
-Compute the following information:
+python main.py -dataType long
 
-The number of integers in the input (X)
+python main.py -dataType line
 
-The greatest number in the input (Y)
+python main.py -dataType word
 
-How many times the greatest number occurs in the input (Z)
+Run examples
 
-Output it using this template:
-
-Total numbers: X.
-The greatest number: Y (Z time(s)).
-
-Example
 The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
 
-> 1 -2   33 4
+Example 1, for integers:
+
+> 1 -2   333 4
 > 42
 > 1                 1
 Total numbers: 7.
-The greatest number: 42 (1 time(s)).
+The greatest number: 333 (1 time(s), 14%).
+
+Example 2, for lines:
+
+> 1 -2   333 4
+> 42
+> 1                 1
+Total lines: 3.
+The longest line:
+1                 1
+(1 time(s), 33%).
+
+Example 3, for words:
+
+> 1 -2   333 4
+> 42
+> 1                 1
+Total words: 7.
+The longest word: 333 (1 time(s), 14%).
