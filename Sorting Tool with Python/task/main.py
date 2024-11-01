@@ -1,6 +1,7 @@
 import argparse
 
 
+
 class StringSortingTool:
     def __init__(self):
         self.data = []
@@ -34,6 +35,45 @@ class StringSortingTool:
                 f"The longest line:\n"
                 f"{self.max_item}\n"
                 f"({self.counter} time(s), {self.percentage}%).")
+
+    def sorting_result(self):
+        self.sort_data()
+        print(f"Total lines: {len(self.data)}.\n"
+              f"Sorted data: {' '.join(self.data)}")
+
+    def sort_data(self):
+        self.data = self._merge_sort(self.data)
+
+    def _merge_sort(self, arr):
+        if len(arr) <= 1:
+            return arr
+
+        # Split the array into two halves
+        middle = len(arr) // 2
+        left_half = self._merge_sort(arr[:middle])
+        right_half = self._merge_sort(arr[middle:])
+
+        # Merge the two halves
+        return self._merge_arr(left_half, right_half)
+
+    @staticmethod
+    def _merge_arr(left, right):
+        result = []
+        i = j = 0
+
+        # Merge two sorted lists
+        while i < len(left) and j < len(right):
+            if left[i] <= right[j]:
+                result.append(left[i])
+                i += 1
+            else:
+                result.append(right[j])
+                j += 1
+
+        # Add any remaining elements
+        result.extend(left[i:])
+        result.extend(right[j:])
+        return result
 
 
 class WordSortingTool(StringSortingTool):
@@ -80,37 +120,40 @@ class NumberSortingTool(StringSortingTool):
         return (f"Total numbers: {len(self.data)}.\n"
                 f"The greatest number: {self.max_item} ({self.counter} time(s), {self.percentage}%).")
 
+    def sorting_result(self):
+        self.sort_data()
+        print(f"Total numbers: {len(self.data)}.\n"
+              f"Sorted data: {' '.join(map(str, self.data))}")
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="This program sorts input strings.")
 
     parser.add_argument("-dataType", default="word", choices=["word", "line", "long"])
+    parser.add_argument("-sortIntegers", action="store_true")
     args = parser.parse_args()
     mark = args.dataType
-    
-    match mark:
-        case "line":
-            a = StringSortingTool()
-            a.add_data()
-            a.max()
-            a.counting_max()
-            a.percentage_counter()
-            print(str(a))
-        case "word":
-            b = WordSortingTool()
-            b.add_data()
-            b.max()
-            b.counting_max()
-            b.percentage_counter()
-            print(str(b))
-        case "long":
-            c = NumberSortingTool()
-            c.add_data()
-            c.max()
-            c.counting_max()
-            c.percentage_counter()
-            print(str(c))
+    sort_int = args.sortIntegers
 
+    if sort_int:
+        d = NumberSortingTool()
+        d.add_data()
+        d.sorting_result()
+    else:
+        match mark:
+            case "line":
+                tool = StringSortingTool()
+            case "word":
+                tool = WordSortingTool()
+            case "long":
+                tool = NumberSortingTool()
+
+        tool.add_data()
+        tool.max()
+        tool.counting_max()
+        tool.percentage_counter()
+        print(str(tool))
 
 
 
