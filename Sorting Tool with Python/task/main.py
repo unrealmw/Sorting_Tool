@@ -1,4 +1,5 @@
 import argparse
+import sys
 
 
 class StringSortingTool:
@@ -131,13 +132,16 @@ class WordSortingTool(StringSortingTool):
 
 
 class NumberSortingTool(WordSortingTool):
-    def add_data(self):
-        while True:
+    def from_str_to_int(self):
+        int_list = []
+        for char in self.data:
             try:
-                str_data = input()
-                self.data += [int(i) for i in str_data.split()]
-            except EOFError:
-                break
+                num = int(char)
+                int_list.append(num)
+            except ValueError:
+                print(f"{char} is not a long. It will be skipped.")
+                continue
+        self.data = int_list
 
     def find_max_item(self):
         for item in self.data:
@@ -150,11 +154,15 @@ class NumberSortingTool(WordSortingTool):
                 self.counter += 1
 
     def __str__(self):
+        self.from_str_to_int()
+        self.find_max_item()
+        self.count_max_occurrences()
         return (f"Total numbers: {len(self.data)}.\n"
                 f"The greatest number: {self.max_item} ({self.counter} time(s), "
                 f"{self.calculate_percentage(self.counter)}%).")
 
     def sorting_result(self):
+        self.from_str_to_int()
         self.sort_data()
         self.fill_count_dict()
         self.count_dict = dict(sorted(self.count_dict.items(), key=lambda x: x[1]))
@@ -172,14 +180,24 @@ class NumberSortingTool(WordSortingTool):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="This program sorts input strings.")
 
-    parser.add_argument("-dataType", default="word", choices=["word", "line", "long"])
-    parser.add_argument("-sortingType", default="natural", choices=["natural", "byCount"])
-    args = parser.parse_args()
-    mark = args.dataType
+    parser.add_argument("-dataType", nargs="?", default="word", choices=["word", "line", "long"])
+    parser.add_argument("-sortingType", nargs="?", default="natural", choices=["natural", "byCount"])
+    args, unknown = parser.parse_known_args()
+    data_type = args.dataType
     sorting_type = args.sortingType
 
+    if len(unknown) > 0:
+        for arg in unknown:
+            print(f'"{arg}" is not a valid parameter. It will be skipped.')
 
-    match mark:
+    if sorting_type is None:
+        print('No sorting type defined!')
+        sys.exit()
+    if data_type is None:
+        print('No data type defined!')
+        sys.exit()
+
+    match data_type:
         case "line":
             tool = StringSortingTool(sort_type=sorting_type)
         case "word":
