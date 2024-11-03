@@ -1,68 +1,17 @@
 Description
-There is always a possibility that someone will run your program the wrong way. It shouldn't just silently crash, but instead, it should print a message that informs the user of the mistake they made.
-
-In this stage, let's implement error handling for various exceptional situations the user might encounter.
+Sometimes it's useful to read data that is from a file, rather than from the standard input, and write the result to another file instead of printing it to the console. Add this functionality to your program along with the appropriate command-line argument support.
 
 Objectives
-Add exception handling for possible errors and output error messages to the console:
+Update command-line arguments parsing to support the -inputFile and -outputFile arguments.
 
-if the -sortingType argument is provided but the type is not, print a message No sorting type defined!
+If -inputFile is provided followed by the file name, read the input data from the file.
 
-if the -dataType argument is provided but the type is not, print No data type defined!
-
-if unknown command-line arguments are provided, print "-arg" is not a valid parameter. It will be skipped. for each unknown argument -arg;
-
-if there are strings in the input, but the data type is defined as long, print "abc" is not a long. It will be skipped. for each string abc from the input.
+If -outputFile is provided followed by the file name, output only the error messages to the console and print the results to the file.
 
 Examples
-The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
+Example 1: input file is defined
 
-Example 1: sorting numbers naturally without errors
+python main.py -sortingType byCount -inputFile input.txt
+Example 2: input and output files are defined
 
-$> python main.py -sortingType natural -dataType long
-> 1 -2   33 4
-> 42
-> 1                 1
-Total numbers: 7.
-Sorted data: -2 1 1 1 4 33 42
-Example 2: sorting numbers by count without errors
-
-$> python main.py -sortingType byCount -dataType long
-> 1 -2   33 4
-> 42
-> 1                 1
-Total numbers: 7.
--2: 1 time(s), 14%
-4: 1 time(s), 14%
-33: 1 time(s), 14%
-42: 1 time(s), 14%
-1: 3 time(s), 43%
-Example 3: missing sorting type
-
-$> python main.py -sortingType
-No sorting type defined!
-Example 4: missing data type
-
-$> python main.py -dataType
-No data type defined!
-Example 5: invalid arguments and input value
-
-$> python main.py -dataType long -sortingType natural -abc -def
-"-abc" is not a valid parameter. It will be skipped.
-"-def" is not a valid parameter. It will be skipped.
-> a 2 -42
-"a" is not a long. It will be skipped.
-Total numbers: 2.
-Sorted data: -42 2
-Example 6: invalid input values
-
-$> python main.py -dataType long -sortingType byCount
-> 1 -2   abc 4
-> bcd
-> 1                 1
-"abc" is not a long. It will be skipped.
-"bcd" is not a long. It will be skipped.
-Total numbers: 5.
--2: 1 time(s), 20%
-4: 1 time(s), 20%
-1: 3 time(s), 60%
+python main.py -sortingType byCount -inputFile data.dat -outputFile out.txt

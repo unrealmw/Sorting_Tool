@@ -10,6 +10,15 @@ class StringSortingTool:
         self.counter = 0
         self.percentage = 0
         self.count_dict = dict()
+        self.result_string = ""
+
+    def read_file(self, file_name):
+        with open(file_name, "r") as file:
+            self.data = file.readlines()
+
+    def write_to_file(self, file_name):
+        with open(file_name, "w") as file:
+            file.write(self.result_string)
 
     def add_data(self):
         while True:
@@ -46,20 +55,23 @@ class StringSortingTool:
             else:
                 self.count_dict[item] = 1
 
-    def sorting_result(self):
+    def make_result(self):
         self.sort_data()
         self.fill_count_dict()
         self.count_dict = dict(sorted(self.count_dict.items(), key=lambda x: x[1]))
-        print(f"Total lines: {len(self.data)}.")
+        self.result_string += f"Total lines: {len(self.data)}.\n"
         match self.sort_type:
             case "natural":
-                print(f"Sorted data:")
+                self.result_string += f"Sorted data:\n"
                 for line in self.data:
-                    print(line)
+                    self.result_string += (line + "\n")
             case "byCount":
                 for k in self.count_dict.keys():
                     v = self.count_dict[k]
-                    print(f"{k}: {v} time(s), {self.calculate_percentage(v)}%")
+                    self.result_string += f"{k}: {v} time(s), {self.calculate_percentage(v)}%\n"
+
+    def printing_result(self):
+        print(self.result_string)
 
     def sort_data(self):
         self.data = self._merge_sort(self.data)
@@ -97,13 +109,11 @@ class StringSortingTool:
 
 
 class WordSortingTool(StringSortingTool):
-    def add_data(self):
-        while True:
-            try:
-                str_data = input()
-                self.data += str_data.split()
-            except EOFError:
-                break
+    def from_string_to_word(self):
+        word_list = []
+        for line in self.data:
+            word_list += line.split()
+        self.data = word_list
 
     def fill_count_dict(self):
         for item in self.data:
@@ -113,22 +123,26 @@ class WordSortingTool(StringSortingTool):
                 self.count_dict[item] = 1
 
     def __str__(self):
+        self.from_string_to_word()
+        self.find_max_item()
+        self.count_max_occurrences()
         return (f"Total words: {len(self.data)}.\n"
                 f"The longest word: {self.max_item} ({self.counter} time(s), "
                 f"{self.calculate_percentage(self.counter)}%).")
 
-    def sorting_result(self):
+    def make_result(self):
+        self.from_string_to_word()
         self.sort_data()
         self.fill_count_dict()
         self.count_dict = dict(sorted(self.count_dict.items(), key=lambda x: x[1]))
-        print(f"Total words: {len(self.data)}.")
+        self.result_string += f"Total words: {len(self.data)}.\n"
         match self.sort_type:
             case "natural":
-                print(f"Sorted data: {' '.join(self.data)}")
+                self.result_string += f"Sorted data: {' '.join(self.data)}\n"
             case "byCount":
                 for k in self.count_dict.keys():
                     v = self.count_dict[k]
-                    print(f"{k}: {v} time(s), {self.calculate_percentage(v)}%")
+                    self.result_string += f"{k}: {v} time(s), {self.calculate_percentage(v)}%\n"
 
 
 class NumberSortingTool(WordSortingTool):
@@ -161,19 +175,20 @@ class NumberSortingTool(WordSortingTool):
                 f"The greatest number: {self.max_item} ({self.counter} time(s), "
                 f"{self.calculate_percentage(self.counter)}%).")
 
-    def sorting_result(self):
+    def make_result(self):
+        self.from_string_to_word()
         self.from_str_to_int()
         self.sort_data()
         self.fill_count_dict()
         self.count_dict = dict(sorted(self.count_dict.items(), key=lambda x: x[1]))
-        print(f"Total numbers: {len(self.data)}.")
+        self.result_string += f"Total numbers: {len(self.data)}.\n"
         match self.sort_type:
             case "natural":
-                print(f"Sorted data: {' '.join(map(str, self.data))}")
+                self.result_string += f"Sorted data: {' '.join(map(str, self.data))}\n"
             case "byCount":
                 for k in self.count_dict.keys():
                     v = self.count_dict[k]
-                    print(f"{k}: {v} time(s), {self.calculate_percentage(v)}%")
+                    self.result_string += f"{k}: {v} time(s), {self.calculate_percentage(v)}%\n"
 
 
 
@@ -182,9 +197,13 @@ if __name__ == '__main__':
 
     parser.add_argument("-dataType", nargs="?", default="word", choices=["word", "line", "long"])
     parser.add_argument("-sortingType", nargs="?", default="natural", choices=["natural", "byCount"])
+    parser.add_argument("-inputFile", nargs="?")
+    parser.add_argument("-outputFile", nargs="?")
     args, unknown = parser.parse_known_args()
     data_type = args.dataType
     sorting_type = args.sortingType
+    input_file = args.inputFile
+    output_file = args.outputFile
 
     if len(unknown) > 0:
         for arg in unknown:
@@ -197,6 +216,7 @@ if __name__ == '__main__':
         print('No data type defined!')
         sys.exit()
 
+
     match data_type:
         case "line":
             tool = StringSortingTool(sort_type=sorting_type)
@@ -205,8 +225,18 @@ if __name__ == '__main__':
         case "long":
             tool = NumberSortingTool(sort_type=sorting_type)
 
-    tool.add_data()
-    tool.sorting_result()
+    if (input_file is not None) and (output_file is None):
+        tool.read_file(input_file)
+        tool.make_result()
+        tool.printing_result()
+    elif (input_file is not None) and (output_file is not None):
+        tool.read_file(input_file)
+        tool.make_result()
+        tool.write_to_file(output_file)
+    else:
+        tool.add_data()
+        tool.make_result()
+        tool.printing_result()
 
 
 
